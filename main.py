@@ -1,24 +1,20 @@
-from pyrogram import Client
-from pyrogram.types import ChatJoinRequest
+import os
+import telebot
 
-# Твои данные (вставил напрямую для простоты)
-API_ID = 35652667
-API_HASH = "bb4d2b2700dbe396e57c14042c60db34"
-BOT_TOKEN = "8343818784:AAG_8HL6W5ON83EPWvvEtUP-API1VScgPVw"
+# Берем токен из переменной окружения или вставляем напрямую
+TOKEN = os.getenv("BOT_TOKEN", "8343818784:AAG_8HL6W5ON83EPWvvEtUP-API1VScgPVw")
+bot = telebot.TeleBot(TOKEN)
 
-# Создаем клиента бота
-app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-
-@app.on_chat_join_request()
-async def approve_request(client, chat_join_request: ChatJoinRequest):
-    # Автоматически одобряем заявку
-    await client.approve_chat_join_request(
-        chat_id=chat_join_request.chat.id,
-        user_id=chat_join_request.from_user.id
-    )
-    print(f"Заявка принята от: {chat_join_request.from_user.first_name}")
+# Обработка заявок на вступление в канал
+@bot.chat_join_request_handler()
+funcdef(request):
+    try:
+        bot.approve_chat_join_request(request.chat.id, request.from_user.id)
+        print(f"Заявка одобрена для: {request.from_user.first_name}")
+    except Exception as e:
+        print(f"Ошибка: {e}")
 
 if __name__ == "__main__":
-    print("Бот запущен!")
-    app.run()
-  
+    print("Бот запущен и слушает заявки...")
+    bot.infinity_polling()
+    
